@@ -23,6 +23,14 @@ function App() {
     })
   }
 
+  function väljaAlla() {
+    setValda(new Set(datasets.map((_, i) => i)))
+  }
+
+  function avmarkera() {
+    setValda(new Set([0]))
+  }
+
   const resultat = datasets
     .map((dataset, i) => {
       if (!valda.has(i)) return null
@@ -74,41 +82,50 @@ function App() {
 
       <fieldset className="dataset-val">
         <legend>Jämför mot dataset</legend>
-        {datasets.map((d, i) => (
-          <label key={i} className="checkbox-label">
-            <input
-              type="checkbox"
-              checked={valda.has(i)}
-              onChange={() => toggleDataset(i)}
-            />
-            {d.namn}
-          </label>
-        ))}
+        <div className="dataset-actions">
+          <button type="button" onClick={väljaAlla}>Välj alla</button>
+          <button type="button" onClick={avmarkera}>Avmarkera</button>
+          <span className="vald-räknare">{valda.size} valda</span>
+        </div>
+        <div className="checkbox-grid">
+          {datasets.map((d, i) => (
+            <label key={i} className="checkbox-label">
+              <input
+                type="checkbox"
+                checked={valda.has(i)}
+                onChange={() => toggleDataset(i)}
+              />
+              {d.namn.replace('Dataset ', '')}
+            </label>
+          ))}
+        </div>
       </fieldset>
 
       {visaTabell && (
-        <table className="jämförelse">
-          <thead>
-            <tr>
-              <th>Dataset</th>
-              <th>Verbal</th>
-              <th>Kvantitativ</th>
-              <th>Normpoäng</th>
-            </tr>
-          </thead>
-          <tbody>
-            {resultat.map((r) => (
-              <tr key={r.namn}>
-                <td>{r.namn}</td>
-                <td>{r.verbalNorm !== null ? r.verbalNorm.toFixed(1) : '–'}</td>
-                <td>{r.kvantitativNorm !== null ? r.kvantitativNorm.toFixed(1) : '–'}</td>
-                <td className={r.slutpoäng !== null ? 'poäng-cell' : ''}>
-                  {r.slutpoäng !== null ? r.slutpoäng.toFixed(1) : '–'}
-                </td>
+        <div className="tabell-wrapper">
+          <table className="jämförelse">
+            <thead>
+              <tr>
+                <th>Dataset</th>
+                <th>Verbal</th>
+                <th>Kvant.</th>
+                <th>Normpoäng</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {resultat.map((r) => (
+                <tr key={r.namn}>
+                  <td>{r.namn.replace('Dataset ', '')}</td>
+                  <td>{r.verbalNorm !== null ? r.verbalNorm.toFixed(1) : '–'}</td>
+                  <td>{r.kvantitativNorm !== null ? r.kvantitativNorm.toFixed(1) : '–'}</td>
+                  <td className={r.slutpoäng !== null ? 'poäng-cell' : ''}>
+                    {r.slutpoäng !== null ? r.slutpoäng.toFixed(1) : '–'}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   )
